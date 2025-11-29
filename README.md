@@ -177,7 +177,7 @@ This repo uses an encrypted private repository for secrets management.
 **Setup (already configured):**
 - Age encryption key at `~/.config/chezmoi/key.txt`
 - Private repo: https://github.com/shanemcd/dotfiles-secrets
-- Encrypted config: `chezmoi-secrets.toml.age` (automatically pulled and decrypted)
+- Encrypted config: `chezmoi-secrets.toml.age` (pulled via git-repo in `.chezmoiexternal.toml`)
 
 **When you provision a new machine:**
 
@@ -189,23 +189,33 @@ This repo uses an encrypted private repository for secrets management.
    chmod 600 ~/.config/chezmoi/key.txt
    ```
 
-2. **Clone and apply dotfiles** (secrets will be auto-fetched):
+2. **Clone and apply dotfiles**:
    ```bash
-   chezmoi init --apply git@github.com:shanemcd/dotfiles.git
+   chezmoi init git@github.com:shanemcd/dotfiles.git
    ```
 
-   Chezmoi will:
-   - Clone your dotfiles
-   - Fetch encrypted secrets from private repo
-   - Decrypt them using your age key
-   - Apply everything automatically
+   This will:
+   - Clone your main dotfiles to `~/.local/share/chezmoi`
+   - Clone your secrets repo to `~/.local/share/dotfiles-secrets` (via `.chezmoiexternal.toml`)
+   - Copy encrypted `chezmoi-secrets.toml.age` to `~/.config/chezmoi/`
+
+3. **Decrypt secrets to create your local config**:
+   ```bash
+   age -d -i ~/.config/chezmoi/key.txt \
+       -o ~/.config/chezmoi/chezmoi.toml \
+       ~/.config/chezmoi/chezmoi-secrets.toml.age
+   ```
+
+4. **Apply dotfiles**:
+   ```bash
+   chezmoi apply -v
+   ```
 
 **Updating secrets:**
 
 ```bash
-# 1. Clone the secrets repo
-git clone git@github.com:shanemcd/dotfiles-secrets.git
-cd dotfiles-secrets
+# 1. Navigate to the secrets repo (already cloned by chezmoi)
+cd ~/.local/share/dotfiles-secrets
 
 # 2. Decrypt the secrets file
 age -d -i ~/.config/chezmoi/key.txt -o chezmoi-secrets.toml chezmoi-secrets.toml.age
@@ -224,7 +234,11 @@ git commit -m "Update secrets"
 git push
 
 # 6. Update on all your machines
-chezmoi update  # Pulls and applies latest secrets
+cd ~/.local/share/dotfiles-secrets && git pull  # Pull latest secrets
+age -d -i ~/.config/chezmoi/key.txt \
+    -o ~/.config/chezmoi/chezmoi.toml \
+    chezmoi-secrets.toml.age  # Update local config
+chezmoi apply  # Apply changes
 ```
 
 **Security layers:**
@@ -254,7 +268,7 @@ Pull secrets from a separate private GitHub repo (see `.chezmoiexternal.toml` fo
 
 ✅ **Encrypted private repository** (https://github.com/shanemcd/dotfiles-secrets):
 - Contains `chezmoi-secrets.toml.age` (encrypted with age)
-- Automatically pulled via `.chezmoiexternal.toml`
+- Cloned to `~/.local/share/dotfiles-secrets` via `.chezmoiexternal.toml` (git-repo type)
 - Stores all secrets: GCP project IDs, API keys, etc.
 
 ✅ **Age encryption key** (`~/.config/chezmoi/key.txt`):
@@ -263,6 +277,7 @@ Pull secrets from a separate private GitHub repo (see `.chezmoiexternal.toml` fo
 - Public key: `age1wuc38w6748e7l0za4v5paccs9muasjuuqrdqq8npqyxl0dfseclsfh386e`
 
 **To provision a new machine:**
+
 1. **Restore your age key first:**
    ```bash
    mkdir -p ~/.config/chezmoi
@@ -270,12 +285,24 @@ Pull secrets from a separate private GitHub repo (see `.chezmoiexternal.toml` fo
    chmod 600 ~/.config/chezmoi/key.txt
    ```
 
-2. **Clone and apply** (secrets auto-fetch):
+2. **Init chezmoi** (clones both repos):
    ```bash
-   chezmoi init --apply git@github.com:shanemcd/dotfiles.git
+   chezmoi init git@github.com:shanemcd/dotfiles.git
    ```
 
-That's it! Your secrets are automatically pulled, decrypted, and applied.
+3. **Decrypt secrets to create local config:**
+   ```bash
+   age -d -i ~/.config/chezmoi/key.txt \
+       -o ~/.config/chezmoi/chezmoi.toml \
+       ~/.config/chezmoi/chezmoi-secrets.toml.age
+   ```
+
+4. **Apply dotfiles:**
+   ```bash
+   chezmoi apply -v
+   ```
+
+Done! Your secrets are decrypted locally and dotfiles are applied.
 
 ---
 
