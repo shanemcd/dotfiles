@@ -1,0 +1,3 @@
+[submodule "external_secrets"]
+	path = external_secrets
+	url = git@github.com:shanemcd/dotfiles-secrets.git
