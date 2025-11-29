@@ -1,14 +1,8 @@
 # External dependencies - files from other repos
-# Chezmoi will automatically fetch these when applying
+# Note: The secrets repo is cloned by run_once_before_00-clone-secrets-repo.sh
+# This just copies the encrypted file to the config directory
 
-# Clone private secrets repo (works with SSH keys)
-[".local/share/dotfiles-secrets"]
-    type = "git-repo"
-    url = "git@github.com:shanemcd/dotfiles-secrets.git"
-    refreshPeriod = "168h"  # Refresh weekly
-
-# Copy the encrypted secrets file from the cloned repo
 [".config/chezmoi/chezmoi-secrets.toml.age"]
     type = "file"
-    url = "file://{{ .chezmoi.homeDir }}/.local/share/dotfiles-secrets/chezmoi-secrets.toml.age"
+    url = "file:///{{ .chezmoi.homeDir }}/.local/share/dotfiles-secrets/chezmoi-secrets.toml.age"
     refreshPeriod = "168h"
