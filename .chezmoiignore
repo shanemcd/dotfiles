@@ -1,0 +1,6 @@
+# Files that should be managed by chezmoi but NOT committed to git
+# Add these files to .gitignore as well
+
+# Private environment variables
+.zshrc_private
+.bashrc_private

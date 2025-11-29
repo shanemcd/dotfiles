@@ -1,0 +1,5 @@
+# Chezmoi files that should NOT be committed
+
+# Private dotfiles
+dot_zshrc_private
+dot_bashrc_private

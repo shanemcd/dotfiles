@@ -150,8 +150,8 @@ if [ -f '/var/home/shanemcd/google-cloud-sdk/completion.zsh.inc' ]; then . '/var
 
 export CLAUDE_CODE_USE_VERTEX=1
 export CLOUD_ML_REGION=us-east5
-export ANTHROPIC_VERTEX_PROJECT_ID=itpc-gcp-ansible-pe-eng-claude
-export GOOGLE_CLOUD_PROJECT=itpc-gcp-ansible-pe-eng-claude
+export ANTHROPIC_VERTEX_PROJECT_ID={{ .secrets.anthropic_vertex_project_id }}
+export GOOGLE_CLOUD_PROJECT={{ .secrets.google_cloud_project }}
 export ANTHROPIC_MODEL='claude-sonnet-4-5@20250929'
 #export ANTHROPIC_MODEL="claude-sonnet-4@20250514"
 export ANTHROPIC_SMALL_FAST_MODEL='claude-3-5-haiku@20241022'

@@ -1,0 +1,32 @@
+# Chezmoi configuration template
+# Copy this to ~/.config/chezmoi/chezmoi.toml and customize for your machine
+
+# Age encryption for encrypted_ files
+# Your age public key: age1wuc38w6748e7l0za4v5paccs9muasjuuqrdqq8npqyxl0dfseclsfh386e
+encryption = "age"
+
+[data]
+    email = "your-email@example.com"
+    name = "Your Name"
+
+[data.machine]
+    # Set this to identify different machines
+    # Options: "mac" for macOS, "linux" for Linux
+    type = "{{ .chezmoi.os }}"
+
+[data.secrets]
+    # Add your private environment variables here
+    # These values stay local and are NOT committed to git
+    anthropic_vertex_project_id = "your-project-id"
+    google_cloud_project = "your-project-id"
+
+[edit]
+    command = "vim"
+
+[git]
+    autoCommit = false
+    autoPush = false
+
+[age]
+    identity = "~/.config/chezmoi/key.txt"
+    recipient = "age1wuc38w6748e7l0za4v5paccs9muasjuuqrdqq8npqyxl0dfseclsfh386e"

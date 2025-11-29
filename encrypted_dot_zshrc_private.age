@@ -1,0 +1,6 @@
+# Private environment variables - ENCRYPTED
+# This file will be encrypted and can be safely committed to git
+
+# Example secrets (replace with your actual secrets)
+export MY_SECRET_API_KEY="your-api-key-here"
+export PRIVATE_TOKEN="your-token-here"
