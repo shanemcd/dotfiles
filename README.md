@@ -281,15 +281,19 @@ Pull secrets from a separate private GitHub repo (see `.chezmoiexternal.toml` fo
 1. **Restore your age key first:**
    ```bash
    mkdir -p ~/.config/chezmoi
-   # Copy key.txt from your secure backup
+   # Copy key.txt from your secure backup (1Password, USB, etc.)
    chmod 600 ~/.config/chezmoi/key.txt
    ```
 
-2. **Init and setup** (one command):
+2. **Init chezmoi and fetch external repos:**
    ```bash
    chezmoi init git@github.com:shanemcd/dotfiles.git
+   chezmoi apply  # This clones dotfiles-secrets repo and copies encrypted file
+   ```
+
+3. **Decrypt secrets:**
+   ```bash
    ~/.local/share/chezmoi/setup-secrets.sh
-   chezmoi apply -v
    ```
 
    The `setup-secrets.sh` helper script automatically:
@@ -297,14 +301,29 @@ Pull secrets from a separate private GitHub repo (see `.chezmoiexternal.toml` fo
    - Decrypts `chezmoi-secrets.toml.age`
    - Creates your local `chezmoi.toml` config
 
+4. **Apply dotfiles:**
+   ```bash
+   chezmoi apply -v
+   ```
+
+5. **Reload shell:**
+   ```bash
+   exec zsh
+   ```
+
 **Alternative manual steps:**
 ```bash
 # If you prefer to do it manually:
+mkdir -p ~/.config/chezmoi
+# Copy key.txt from backup
+chmod 600 ~/.config/chezmoi/key.txt
 chezmoi init git@github.com:shanemcd/dotfiles.git
+chezmoi apply  # Fetch encrypted secrets
 age -d -i ~/.config/chezmoi/key.txt \
     -o ~/.config/chezmoi/chezmoi.toml \
     ~/.config/chezmoi/chezmoi-secrets.toml.age
 chezmoi apply -v
+exec zsh
 ```
 
 ---
