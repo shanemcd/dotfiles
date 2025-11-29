@@ -4,3 +4,12 @@
 # Private environment variables
 .zshrc_private
 .bashrc_private
+
+# Google Cloud SDK - ignore logs, cache, and temporary files
+.config/gcloud/logs
+.config/gcloud/cache
+.config/gcloud/.last_survey_prompt.yaml
+.config/gcloud/.last_update_check.json
+.config/gcloud/.metricsUUID
+.config/gcloud/config_sentinel
+.config/gcloud/default_configs.db
