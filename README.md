@@ -18,11 +18,15 @@ This repo uses encrypted secrets in a private GitHub repository for automatic sy
    chmod 600 ~/.config/chezmoi/key.txt
    ```
 
-2. **Init chezmoi and fetch external repos:**
+2. **Init chezmoi (automatically clones secrets repo):**
    ```bash
-   chezmoi init git@github.com:shanemcd/dotfiles.git
-   chezmoi apply  # This clones dotfiles-secrets repo and copies encrypted file
+   chezmoi init --apply git@github.com:shanemcd/dotfiles.git
    ```
+
+   This automatically:
+   - Clones your dotfiles
+   - Clones your private secrets repo (via run_once script)
+   - Copies encrypted secrets file to `~/.config/chezmoi/`
 
 3. **Decrypt secrets:**
    ```bash
