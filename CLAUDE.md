@@ -197,7 +197,7 @@ The repository handles macOS and Linux differently:
 - `.chezmoi.toml.tmpl` - Template for local config file, defines required secrets structure
 - `.chezmoiexternal.toml` - Copies encrypted secrets from the external_secrets submodule to config directory
 - `.gitmodules` - Defines the external_secrets submodule (private secrets repo)
-- `run_once_after_01-decrypt-secrets.sh` - Auto-decrypts secrets after initial chezmoi init
+- `run_onchange_after_01-decrypt-secrets.sh` - Auto-decrypts secrets when script changes or secrets missing
 - `setup-secrets.sh` - Manual helper script to decrypt secrets (troubleshooting tool)
 - `.chezmoiignore` - Files managed by chezmoi but not committed to git
 - `.gitignore` - Prevents committing private dotfiles to the repository
@@ -284,5 +284,5 @@ git push
    - Never commit actual secret values or encrypted content to the public dotfiles repo
    - Document new secret variables in `.chezmoi.toml.tmpl` as placeholders
    - After updating secrets in the submodule, commit both the submodule change AND the parent repo's submodule reference
-6. **The `run_once_after` script runs only once** - if you update `run_once_after_01-decrypt-secrets.sh`, remove `~/.local/share/chezmoi/.chezmoistate.boltdb` to re-run it
+6. **The `run_onchange_after` script runs when it changes** - if you update `run_onchange_after_01-decrypt-secrets.sh`, it will automatically re-run on next `chezmoi apply`
 7. **Submodule management** - Chezmoi automatically initializes the `external_secrets` submodule on first `chezmoi init`

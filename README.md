@@ -56,8 +56,8 @@ Done! Your environment variables and dotfiles are configured.
 - Must be backed up securely (1Password, USB, etc.)
 - Public key: `age1wuc38w6748e7l0za4v5paccs9muasjuuqrdqq8npqyxl0dfseclsfh386e`
 
-✅ **Automatic decryption** (`run_once_after_01-decrypt-secrets.sh`):
-- Runs automatically after first `chezmoi init --apply`
+✅ **Automatic decryption** (`run_onchange_after_01-decrypt-secrets.sh`):
+- Runs automatically when the script changes or secrets are missing
 - Decrypts `chezmoi-secrets.toml.age` → `~/.config/chezmoi/chezmoi.toml`
 - Gracefully handles missing age key (can be added later)
 
