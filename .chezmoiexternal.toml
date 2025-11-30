@@ -1,8 +1,8 @@
 # External dependencies - files from other repos
-# Note: The secrets repo is cloned by run_once_before_00-clone-secrets-repo.sh
-# This just copies the encrypted file to the config directory
+# Note: The secrets repo is managed as a git submodule (external_secrets/)
+# This copies the encrypted secrets file to the config directory for decryption
 
 [".config/chezmoi/chezmoi-secrets.toml.age"]
     type = "file"
-    url = "file:///{{ .chezmoi.homeDir }}/.local/share/dotfiles-secrets/chezmoi-secrets.toml.age"
+    url = "file:///{{ .chezmoi.sourceDir }}/external_secrets/chezmoi-secrets.toml.age"
     refreshPeriod = "168h"

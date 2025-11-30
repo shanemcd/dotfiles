@@ -18,48 +18,48 @@ This repo uses encrypted secrets in a private GitHub repository for automatic sy
    chmod 600 ~/.config/chezmoi/key.txt
    ```
 
-2. **Init chezmoi (automatically clones secrets repo):**
+2. **One command to bootstrap everything:**
    ```bash
    chezmoi init --apply git@github.com:shanemcd/dotfiles.git
    ```
 
    This automatically:
-   - Clones your dotfiles
-   - Clones your private secrets repo (via run_once script)
+   - Clones your dotfiles repository
+   - Initializes the secrets submodule
    - Copies encrypted secrets file to `~/.config/chezmoi/`
+   - Decrypts secrets (via `run_once_after` script)
+   - Applies all dotfiles
 
-3. **Decrypt secrets:**
-   ```bash
-   ~/.local/share/chezmoi/setup-secrets.sh
-   ```
-
-4. **Apply dotfiles:**
-   ```bash
-   chezmoi apply -v
-   ```
-
-5. **Reload shell:**
+3. **Reload your shell:**
    ```bash
    exec zsh
    ```
 
 Done! Your environment variables and dotfiles are configured.
 
+**Note:** If you don't have the age key in step 1, chezmoi will still initialize but skip decryption. You can add the key later and run `chezmoi apply -v` to complete setup.
+
 ---
 
 ## How Secrets Work
 
-**This repo uses encrypted secrets in a private repository:**
+**This repo uses encrypted secrets in a private git submodule:**
 
 ✅ **Encrypted private repository** (https://github.com/shanemcd/dotfiles-secrets):
 - Contains `chezmoi-secrets.toml.age` (encrypted with age)
-- Cloned to `~/.local/share/dotfiles-secrets` via `.chezmoiexternal.toml` (git-repo type)
+- Managed as a git submodule at `external_secrets/`
+- Automatically initialized by chezmoi on first run
 - Stores all secrets: GCP project IDs, API keys, etc.
 
 ✅ **Age encryption key** (`~/.config/chezmoi/key.txt`):
 - Required to decrypt secrets
 - Must be backed up securely (1Password, USB, etc.)
 - Public key: `age1wuc38w6748e7l0za4v5paccs9muasjuuqrdqq8npqyxl0dfseclsfh386e`
+
+✅ **Automatic decryption** (`run_once_after_01-decrypt-secrets.sh`):
+- Runs automatically after first `chezmoi init --apply`
+- Decrypts `chezmoi-secrets.toml.age` → `~/.config/chezmoi/chezmoi.toml`
+- Gracefully handles missing age key (can be added later)
 
 **Security layers:**
 - ✅ Encrypted with age (secure even if GitHub is compromised)
@@ -73,8 +73,8 @@ Done! Your environment variables and dotfiles are configured.
 When you need to add or change secrets (API keys, project IDs, etc.):
 
 ```bash
-# 1. Navigate to the secrets repo (already cloned by chezmoi)
-cd ~/.local/share/dotfiles-secrets
+# 1. Navigate to the secrets submodule
+cd ~/.local/share/chezmoi/external_secrets
 
 # 2. Decrypt the secrets file
 age -d -i ~/.config/chezmoi/key.txt -o chezmoi-secrets.toml chezmoi-secrets.toml.age
@@ -92,12 +92,14 @@ git add chezmoi-secrets.toml.age
 git commit -m "Update secrets"
 git push
 
-# 6. Update on all your other machines
-cd ~/.local/share/dotfiles-secrets && git pull  # Pull latest secrets
-age -d -i ~/.config/chezmoi/key.txt \
-    -o ~/.config/chezmoi/chezmoi.toml \
-    chezmoi-secrets.toml.age  # Update local config
-chezmoi apply  # Apply changes
+# 6. Update the main dotfiles repo to track the new submodule commit
+cd ~/.local/share/chezmoi
+git add external_secrets
+git commit -m "Update secrets submodule"
+git push
+
+# 7. Update on all your other machines
+chezmoi update  # Pulls both repos and applies changes
 ```
 
 ---

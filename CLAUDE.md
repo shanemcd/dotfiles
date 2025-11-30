@@ -51,7 +51,7 @@ This repository uses a multi-layered secrets approach:
    - Added as a git submodule at `external_secrets/`
    - Contains `chezmoi-secrets.toml.age` (encrypted with age) for template variables
    - Contains encrypted dotfiles like gcloud configuration
-   - Cloned automatically via `run_once_before_00-clone-secrets-repo.sh`
+   - Automatically initialized by chezmoi when cloning with submodules
    - Requires **both** GitHub access AND the age encryption key
 
 2. **Symlink-based encrypted file management**:
@@ -86,16 +86,15 @@ mkdir -p ~/.config/chezmoi
 # Copy key.txt to ~/.config/chezmoi/key.txt
 chmod 600 ~/.config/chezmoi/key.txt
 
-# 3. Initialize chezmoi (auto-clones secrets repo)
+# 3. One command to bootstrap everything
 chezmoi init --apply git@github.com:shanemcd/dotfiles.git
+# This automatically:
+# - Clones dotfiles repo
+# - Initializes external_secrets submodule
+# - Decrypts secrets (via run_once_after script)
+# - Applies all dotfiles
 
-# 4. Decrypt secrets
-~/.local/share/chezmoi/setup-secrets.sh
-
-# 5. Apply dotfiles
-chezmoi apply -v
-
-# 6. Reload shell
+# 4. Reload shell
 exec zsh
 ```
 
@@ -138,8 +137,8 @@ chezmoi update
 ### Managing Secrets
 
 ```bash
-# Edit secrets in the private repo
-cd ~/.local/share/dotfiles-secrets
+# Edit secrets in the private submodule
+cd ~/.local/share/chezmoi/external_secrets
 age -d -i ~/.config/chezmoi/key.txt -o chezmoi-secrets.toml chezmoi-secrets.toml.age
 vim chezmoi-secrets.toml
 
@@ -151,12 +150,14 @@ git add chezmoi-secrets.toml.age
 git commit -m "Update secrets"
 git push
 
-# On other machines: pull and decrypt
-cd ~/.local/share/dotfiles-secrets && git pull
-age -d -i ~/.config/chezmoi/key.txt \
-    -o ~/.config/chezmoi/chezmoi.toml \
-    chezmoi-secrets.toml.age
-chezmoi apply
+# Update main repo to track new submodule commit
+cd ~/.local/share/chezmoi
+git add external_secrets
+git commit -m "Update secrets submodule"
+git push
+
+# On other machines: pull and apply
+chezmoi update  # Pulls both repos and applies changes
 ```
 
 ### Debugging and Verification
@@ -194,9 +195,10 @@ The repository handles macOS and Linux differently:
 - `dot_zshrc.tmpl` - Main shell configuration, extensively templated for cross-platform use
 - `dot_zprofile.tmpl` - Platform-specific profile (Homebrew setup on macOS only)
 - `.chezmoi.toml.tmpl` - Template for local config file, defines required secrets structure
-- `.chezmoiexternal.toml` - Copies encrypted secrets from the dotfiles-secrets repo to config directory
-- `run_once_before_00-clone-secrets-repo.sh` - Auto-clones the private secrets repository on new machines
-- `setup-secrets.sh` - Helper script to decrypt secrets into local config
+- `.chezmoiexternal.toml` - Copies encrypted secrets from the external_secrets submodule to config directory
+- `.gitmodules` - Defines the external_secrets submodule (private secrets repo)
+- `run_once_after_01-decrypt-secrets.sh` - Auto-decrypts secrets after initial chezmoi init
+- `setup-secrets.sh` - Manual helper script to decrypt secrets (troubleshooting tool)
 - `.chezmoiignore` - Files managed by chezmoi but not committed to git
 - `.gitignore` - Prevents committing private dotfiles to the repository
 - `encrypted_dot_zshrc_private.age` - Encrypted private shell configuration (requires age key)
@@ -277,9 +279,10 @@ git push
 3. **Test with `chezmoi diff`** before applying
 4. **Consider both platforms** - changes to `.tmpl` files affect macOS and Linux
 5. **Secrets workflow**:
-   - Template variables (like project IDs) live in `chezmoi-secrets.toml.age`
-   - Encrypted files (like gcloud config) live in the secrets repo with symlinks in main repo
+   - Template variables (like project IDs) live in `external_secrets/chezmoi-secrets.toml.age`
+   - Encrypted files (like gcloud config) live in the `external_secrets/` submodule with symlinks in main repo
    - Never commit actual secret values or encrypted content to the public dotfiles repo
    - Document new secret variables in `.chezmoi.toml.tmpl` as placeholders
-6. **The `run_once` script runs only once** - if you update `run_once_before_00-clone-secrets-repo.sh`, you may need to remove the chezmoi state to re-run it
-7. **Submodule management** - When cloning on a new machine, chezmoi handles `--recurse-submodules` automatically
+   - After updating secrets in the submodule, commit both the submodule change AND the parent repo's submodule reference
+6. **The `run_once_after` script runs only once** - if you update `run_once_after_01-decrypt-secrets.sh`, remove `~/.local/share/chezmoi/.chezmoistate.boltdb` to re-run it
+7. **Submodule management** - Chezmoi automatically initializes the `external_secrets` submodule on first `chezmoi init`
