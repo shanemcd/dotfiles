@@ -1,6 +1,6 @@
 #!/bin/bash
-# Automatically decrypt secrets after chezmoi init
-# This runs once after the initial chezmoi apply
+# Automatically decrypt secrets on every chezmoi apply
+# Exits early if secrets are already up-to-date
 
 set -e
 
@@ -11,10 +11,12 @@ AGE_KEY="$HOME/.config/chezmoi/key.txt"
 echo "🔐 Auto-decrypting chezmoi secrets..."
 echo
 
-# Check if secrets are already decrypted
-if [ -f "$LOCAL_CONFIG" ]; then
-    echo "✅ Secrets already decrypted at $LOCAL_CONFIG"
-    exit 0
+# Check if secrets need to be re-decrypted (encrypted file is newer)
+if [ -f "$LOCAL_CONFIG" ] && [ -f "$ENCRYPTED_SECRETS" ]; then
+    if [ "$LOCAL_CONFIG" -nt "$ENCRYPTED_SECRETS" ]; then
+        # Decrypted file is newer, no need to re-decrypt
+        exit 0
+    fi
 fi
 
 # Check if age key exists
