@@ -1,1 +1,1 @@
-export PATH={{ output "zsh" "-c" "echo $PATH" }}
+export PATH={{ output "zsh" "-c" "PATH=/usr/bin:/bin:/usr/sbin:/sbin; source ~/.zshrc; echo $PATH" }}
