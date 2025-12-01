@@ -1,8 +1,14 @@
-# Chezmoi configuration template
-# Copy this to ~/.config/chezmoi/chezmoi.toml and customize for your machine
+{{- /* Chezmoi configuration template */ -}}
+{{- /* This template decrypts and includes secrets from external_secrets submodule */ -}}
+{{- /* Age public key: age1wuc38w6748e7l0za4v5paccs9muasjuuqrdqq8npqyxl0dfseclsfh386e */ -}}
 
-# Age encryption for encrypted_ files
-# Your age public key: age1wuc38w6748e7l0za4v5paccs9muasjuuqrdqq8npqyxl0dfseclsfh386e
+{{- $secretsEncrypted := joinPath .chezmoi.sourceDir "external_secrets/chezmoi-secrets.toml.age" -}}
+{{- $ageKey := joinPath .chezmoi.homeDir ".config/chezmoi/key.txt" -}}
+{{- if and (stat $secretsEncrypted) (stat $ageKey) }}
+{{/* Decrypt and include secrets - this contains the full config */}}
+{{ output "age" "-d" "-i" $ageKey $secretsEncrypted | trim }}
+{{- else }}
+{{/* Secrets not available - using placeholders */}}
 encryption = "age"
 
 [data]
@@ -10,13 +16,9 @@ encryption = "age"
     name = "Your Name"
 
 [data.machine]
-    # Set this to identify different machines
-    # Options: "mac" for macOS, "linux" for Linux
     type = "{{ .chezmoi.os }}"
 
 [data.secrets]
-    # Add your private environment variables here
-    # These values stay local and are NOT committed to git
     anthropic_vertex_project_id = "your-project-id"
     google_cloud_project = "your-project-id"
 
@@ -33,3 +35,4 @@ encryption = "age"
 
 [diff]
     exclude = ["scripts"]
+{{- end }}
