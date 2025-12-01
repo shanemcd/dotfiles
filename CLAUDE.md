@@ -69,7 +69,8 @@ This repository uses a multi-layered secrets approach:
 
 4. **Age encryption key** (`~/.config/chezmoi/key.txt`):
    - Required to decrypt any encrypted files
-   - Must be restored from secure backup (1Password, USB) on new machines
+   - Automatically prompted during `chezmoi init` if not present
+   - Can also be restored from secure backup (1Password, USB) before running init
    - Public key: `age1wuc38w6748e7l0za4v5paccs9muasjuuqrdqq8npqyxl0dfseclsfh386e`
 
 ## Essential Chezmoi Commands
@@ -102,20 +103,17 @@ The Ansible role automatically fetches the age key from 1Password and handles th
 # macOS: brew install chezmoi age
 # Linux (Fedora/RHEL): sudo dnf install chezmoi age
 
-# 2. Restore age key from backup (1Password, USB, etc.)
-mkdir -p ~/.config/chezmoi
-# Copy key.txt to ~/.config/chezmoi/key.txt
-chmod 600 ~/.config/chezmoi/key.txt
-
-# 3. One command to bootstrap everything
+# 2. One command to bootstrap everything
 chezmoi init --apply git@github.com:shanemcd/dotfiles.git
 # This automatically:
 # - Clones dotfiles repo
 # - Initializes external_secrets submodule
+# - Prompts for the age private key (if not already present)
+# - Writes the key to ~/.config/chezmoi/key.txt with secure permissions
 # - Generates config with decrypted secrets (via .chezmoi.toml.tmpl)
 # - Applies all dotfiles
 
-# 4. Reload shell
+# 3. Reload shell
 exec zsh
 ```
 

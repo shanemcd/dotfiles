@@ -38,14 +38,7 @@ If you prefer manual control or don't have Ansible set up yet.
 
 **Setup steps:**
 
-1. **Restore the age key:**
-   ```bash
-   mkdir -p ~/.config/chezmoi
-   # Copy key.txt from 1Password, USB backup, etc.
-   chmod 600 ~/.config/chezmoi/key.txt
-   ```
-
-2. **Initialize and apply:**
+1. **Initialize and apply:**
    ```bash
    chezmoi init --apply git@github.com:shanemcd/dotfiles.git
    ```
@@ -53,10 +46,12 @@ If you prefer manual control or don't have Ansible set up yet.
    This automatically:
    - Clones the dotfiles repository
    - Initializes the `external_secrets` submodule (private repo with encrypted secrets)
+   - Prompts for the age private key if not already present (paste from 1Password)
+   - Writes the key to `~/.config/chezmoi/key.txt` with secure permissions
    - Generates `~/.config/chezmoi/chezmoi.toml` from `.chezmoi.toml.tmpl` (which decrypts secrets on-the-fly)
    - Applies all dotfiles to your home directory
 
-3. **Reload the shell:**
+2. **Reload the shell:**
    ```bash
    exec zsh
    ```
@@ -93,6 +88,7 @@ This setup uses chezmoi with several key features:
 
 3. **Age encryption key** (`~/.config/chezmoi/key.txt`):
    - Required to decrypt all secrets
+   - Automatically prompted during `chezmoi init` if not present
    - Public key: `age1wuc38w6748e7l0za4v5paccs9muasjuuqrdqq8npqyxl0dfseclsfh386e`
    - Backed up in 1Password (item: "Chezmoi Key")
 

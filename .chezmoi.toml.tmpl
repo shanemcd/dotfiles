@@ -2,6 +2,15 @@
 {{- /* This template selectively imports only secrets from external_secrets submodule */ -}}
 {{- /* Age public key: age1wuc38w6748e7l0za4v5paccs9muasjuuqrdqq8npqyxl0dfseclsfh386e */ -}}
 
+{{- $ageKeyPath := joinPath .chezmoi.homeDir ".config/chezmoi/key.txt" -}}
+{{- $secretsEncrypted := joinPath .chezmoi.sourceDir "external_secrets/chezmoi-secrets.toml.age" -}}
+
+{{- /* Prompt for age key if it doesn't exist and write it to disk */ -}}
+{{- if not (stat $ageKeyPath) -}}
+{{-   $ageKey := promptStringOnce . "age_private_key" "Enter your age private key (AGE-SECRET-KEY-...)" -}}
+{{-   output "sh" "-c" (printf "mkdir -p '%s' && printf '%%s' '%s' > '%s' && chmod 600 '%s'" (dir $ageKeyPath) $ageKey $ageKeyPath $ageKeyPath) -}}
+{{- end }}
+
 encryption = "age"
 
 [data]
@@ -11,15 +20,13 @@ encryption = "age"
 [data.machine]
     type = "{{ .chezmoi.os }}"
 
-{{- $secretsEncrypted := joinPath .chezmoi.sourceDir "external_secrets/chezmoi-secrets.toml.age" -}}
-{{- $ageKey := joinPath .chezmoi.homeDir ".config/chezmoi/key.txt" }}
-
-{{- if and (stat $secretsEncrypted) (stat $ageKey) }}
+{{ if and (stat $secretsEncrypted) (stat $ageKeyPath) -}}
 {{- /* Decrypt secrets file and extract only the [data.secrets] section */ -}}
-{{- $secretsContent := output "age" "-d" "-i" $ageKey $secretsEncrypted | trim -}}
+{{- $secretsContent := output "age" "-d" "-i" $ageKeyPath $secretsEncrypted | trim -}}
 {{- $secretsData := $secretsContent | fromToml }}
 
-{{ $secretsData.data.secrets | toToml | trim | printf "[data.secrets]\n%s" }}
+[data.secrets]
+{{ $secretsData.data.secrets | toToml | trim }}
 {{- else }}
 {{- /* Secrets not available - using placeholders */ -}}
 [data.secrets]
