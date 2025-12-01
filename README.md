@@ -28,11 +28,6 @@ The [shanemcd.toolbox](https://github.com/shanemcd/toolbox) Ansible collection a
 - Decrypts secrets via `.chezmoi.toml.tmpl`
 - Applies all configuration
 
-For a complete development environment setup (dotfiles + flatpaks + fonts + Emacs), use the `inception` playbook instead:
-```bash
-ansible-playbook shanemcd.toolbox.inception
-```
-
 ### Option B: Manual Setup
 
 If you prefer manual control or don't have Ansible set up yet.

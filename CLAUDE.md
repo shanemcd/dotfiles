@@ -320,9 +320,6 @@ ansible-playbook shanemcd.toolbox.dotfiles
 **How the key is fetched:**
 The role uses the `community.general.onepassword_doc` lookup plugin to securely retrieve the age key from 1Password. This eliminates the manual step of restoring the key from backup during new machine setup.
 
-**Configuration:**
-The role is part of the larger `inception` playbook which sets up a complete development environment (dotfiles, flatpaks, fonts, Emacs, etc.).
-
 ## When Making Changes
 
 1. **Never edit files in `~/` directly** - they'll be overwritten by `chezmoi apply`
