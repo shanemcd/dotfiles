@@ -1,10 +1,10 @@
 # Dotfiles
 
-My personal dotfiles managed with [chezmoi](https://www.chezmoi.io/), supporting both macOS and Linux (Fedora/RHEL). Features encrypted secrets management using age, cross-platform templating, and automated setup via Ansible.
+Personal dotfiles managed with [chezmoi](https://www.chezmoi.io/), supporting both macOS and Linux (Fedora/RHEL). Features encrypted secrets management using age, cross-platform templating, and automated setup via Ansible.
 
 ## Bootstrapping a New Machine
 
-You have two options: automated (recommended) or manual.
+Two options: automated (recommended) or manual.
 
 ### Option A: Automated Setup with Ansible
 
@@ -23,7 +23,7 @@ exec zsh  # Reload shell
 
 The [shanemcd.toolbox](https://github.com/shanemcd/toolbox) Ansible collection automatically:
 - Creates `~/.config/chezmoi` with secure permissions
-- Fetches your age key from 1Password (from the "Chezmoi Key" item)
+- Fetches the age key from 1Password (from the "Chezmoi Key" item)
 - Clones the dotfiles repo and initializes the secrets submodule
 - Decrypts secrets via `.chezmoi.toml.tmpl`
 - Applies all configuration
@@ -38,7 +38,7 @@ If you prefer manual control or don't have Ansible set up yet.
 
 **Setup steps:**
 
-1. **Restore your age key:**
+1. **Restore the age key:**
    ```bash
    mkdir -p ~/.config/chezmoi
    # Copy key.txt from 1Password, USB backup, etc.
@@ -56,12 +56,12 @@ If you prefer manual control or don't have Ansible set up yet.
    - Generates `~/.config/chezmoi/chezmoi.toml` from `.chezmoi.toml.tmpl` (which decrypts secrets on-the-fly)
    - Applies all dotfiles to your home directory
 
-3. **Reload your shell:**
+3. **Reload the shell:**
    ```bash
    exec zsh
    ```
 
-Done! Your environment is configured.
+Done! Environment configured.
 
 ---
 
