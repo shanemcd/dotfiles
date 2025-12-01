@@ -27,7 +27,7 @@ This repo uses encrypted secrets in a private GitHub repository for automatic sy
    - Clones your dotfiles repository
    - Initializes the secrets submodule
    - Copies encrypted secrets file to `~/.config/chezmoi/`
-   - Decrypts secrets (via `run_once_after` script)
+   - Generates config with decrypted secrets (via `.chezmoi.toml.tmpl`)
    - Applies all dotfiles
 
 3. **Reload your shell:**
@@ -56,10 +56,10 @@ Done! Your environment variables and dotfiles are configured.
 - Must be backed up securely (1Password, USB, etc.)
 - Public key: `age1wuc38w6748e7l0za4v5paccs9muasjuuqrdqq8npqyxl0dfseclsfh386e`
 
-✅ **Automatic decryption** (`run_after_01-decrypt-secrets.sh`):
-- Runs on every `chezmoi apply`, but only re-decrypts if encrypted file is newer
-- Decrypts `chezmoi-secrets.toml.age` → `~/.config/chezmoi/chezmoi.toml`
-- Gracefully handles missing age key (can be added later)
+✅ **Template-based decryption** (`.chezmoi.toml.tmpl`):
+- Automatically decrypts secrets when chezmoi processes the config template
+- Decrypts `chezmoi-secrets.toml.age` on-the-fly and injects into `~/.config/chezmoi/chezmoi.toml`
+- Gracefully handles missing age key with placeholder values
 
 **Security layers:**
 - ✅ Encrypted with age (secure even if GitHub is compromised)
@@ -99,7 +99,7 @@ git commit -m "Update secrets submodule"
 git push
 
 # 7. Update on all your other machines
-chezmoi update  # Pulls both repos and applies changes
+chezmoi update  # Pulls both repos and re-generates config with decrypted secrets
 ```
 
 ---
