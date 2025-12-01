@@ -76,6 +76,27 @@ This repository uses a multi-layered secrets approach:
 
 ### New Machine Setup
 
+**Option A: Automated with Ansible (recommended)**
+
+```bash
+# 1. Install prerequisites
+# macOS: brew install chezmoi age ansible-core
+# Linux (Fedora/RHEL): sudo dnf install chezmoi age ansible-core
+
+# 2. Ensure 1Password CLI is authenticated
+op whoami
+
+# 3. Run the automated setup
+ansible-playbook shanemcd.toolbox.dotfiles
+
+# 4. Reload shell
+exec zsh
+```
+
+The Ansible role automatically fetches the age key from 1Password and handles the entire setup.
+
+**Option B: Manual setup**
+
 ```bash
 # 1. Install prerequisites
 # macOS: brew install chezmoi age
@@ -270,6 +291,37 @@ git push
 ```
 
 **Important**: Always symlink individual FILES, not directories. Chezmoi follows file symlinks but not directory symlinks.
+
+## Automated Setup with Ansible
+
+This repository has an associated Ansible collection at https://github.com/shanemcd/toolbox that provides automated setup and provisioning.
+
+### The `dotfiles` Role
+
+The `shanemcd.toolbox.dotfiles` Ansible role automates the entire dotfiles setup process:
+
+**What it does:**
+1. Creates `~/.config/chezmoi` directory with secure permissions (0700)
+2. Fetches the age encryption key from 1Password (if not already present)
+3. Initializes chezmoi with `chezmoi init --apply --force git@github.com:shanemcd/dotfiles.git`
+4. Automatically applies the configuration
+
+**Usage:**
+```bash
+ansible-playbook shanemcd.toolbox.dotfiles
+```
+
+**Requirements:**
+- `chezmoi` installed on the target system
+- `community.general` Ansible collection for 1Password integration
+- 1Password CLI (`op`) installed and authenticated
+- 1Password item named "Chezmoi Key" containing the age private key
+
+**How the key is fetched:**
+The role uses the `community.general.onepassword_doc` lookup plugin to securely retrieve the age key from 1Password. This eliminates the manual step of restoring the key from backup during new machine setup.
+
+**Configuration:**
+The role is part of the larger `inception` playbook which sets up a complete development environment (dotfiles, flatpaks, fonts, Emacs, etc.).
 
 ## When Making Changes
 
