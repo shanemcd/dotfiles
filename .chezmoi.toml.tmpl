@@ -1,29 +1,34 @@
 {{- /* Chezmoi configuration template */ -}}
-{{- /* This template decrypts and includes secrets from external_secrets submodule */ -}}
+{{- /* This template selectively imports only secrets from external_secrets submodule */ -}}
 {{- /* Age public key: age1wuc38w6748e7l0za4v5paccs9muasjuuqrdqq8npqyxl0dfseclsfh386e */ -}}
 
-{{- $secretsEncrypted := joinPath .chezmoi.sourceDir "external_secrets/chezmoi-secrets.toml.age" -}}
-{{- $ageKey := joinPath .chezmoi.homeDir ".config/chezmoi/key.txt" -}}
-{{- if and (stat $secretsEncrypted) (stat $ageKey) }}
-{{/* Decrypt and include secrets - this contains the full config */}}
-{{ output "age" "-d" "-i" $ageKey $secretsEncrypted | trim }}
-{{- else }}
-{{/* Secrets not available - using placeholders */}}
 encryption = "age"
 
 [data]
-    email = "your-email@example.com"
-    name = "Your Name"
+    email = "me@shanemcd.com"
+    name = "Shane McDonald"
 
 [data.machine]
     type = "{{ .chezmoi.os }}"
 
+{{- $secretsEncrypted := joinPath .chezmoi.sourceDir "external_secrets/chezmoi-secrets.toml.age" -}}
+{{- $ageKey := joinPath .chezmoi.homeDir ".config/chezmoi/key.txt" }}
+
+{{- if and (stat $secretsEncrypted) (stat $ageKey) }}
+{{- /* Decrypt secrets file and extract only the [data.secrets] section */ -}}
+{{- $secretsContent := output "age" "-d" "-i" $ageKey $secretsEncrypted | trim -}}
+{{- $secretsData := $secretsContent | fromToml }}
+
+{{ $secretsData.data.secrets | toToml | trim | printf "[data.secrets]\n%s" }}
+{{- else }}
+{{- /* Secrets not available - using placeholders */ -}}
 [data.secrets]
     anthropic_vertex_project_id = "your-project-id"
     google_cloud_project = "your-project-id"
+{{- end }}
 
 [edit]
-    command = "vim"
+    command = "emacs"
 
 [git]
     autoCommit = false
@@ -35,4 +40,3 @@ encryption = "age"
 
 [diff]
     exclude = ["scripts"]
-{{- end }}
