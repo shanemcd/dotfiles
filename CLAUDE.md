@@ -131,7 +131,8 @@ exit
 
 ```bash
 # Pull latest changes from git and apply
-chezmoi update
+# --init recreates config from template (re-decrypts secrets)
+chezmoi update --init
 ```
 
 ### Managing Secrets
@@ -157,7 +158,7 @@ git commit -m "Update secrets submodule"
 git push
 
 # On other machines: pull and apply
-chezmoi update  # Pulls both repos and re-generates config with decrypted secrets
+chezmoi update --init  # Pulls both repos and re-generates config with decrypted secrets
 ```
 
 ### Debugging and Verification

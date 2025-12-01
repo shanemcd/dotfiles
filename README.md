@@ -99,7 +99,7 @@ git commit -m "Update secrets submodule"
 git push
 
 # 7. Update on all your other machines
-chezmoi update  # Pulls both repos and re-generates config with decrypted secrets
+chezmoi update --init  # Pulls both repos and re-generates config with decrypted secrets
 ```
 
 ---
@@ -136,7 +136,7 @@ git push
 exit  # Return to home directory
 
 # On machine B: Pull changes
-chezmoi update  # Pulls from git and applies
+chezmoi update --init  # Pulls from git, re-generates config, and applies
 ```
 
 ### Adding new dotfiles
@@ -173,7 +173,7 @@ chezmoi diff                     # Preview changes
 chezmoi apply -v                 # Apply dotfiles to home directory
 chezmoi edit <file>              # Edit a managed file
 chezmoi add <file>               # Add a new file to chezmoi
-chezmoi update                   # Pull from git and apply
+chezmoi update --init            # Pull from git, regenerate config, and apply
 chezmoi cd                       # Go to source directory
 ```
 
