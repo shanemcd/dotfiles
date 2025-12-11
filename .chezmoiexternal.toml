@@ -6,3 +6,26 @@
     type = "file"
     url = "file:///{{ .chezmoi.sourceDir }}/external_secrets/chezmoi-secrets.toml.age"
     refreshPeriod = "168h"
+
+# Oh My Zsh - core installation
+[".oh-my-zsh"]
+    type = "git-repo"
+    url = "https://github.com/ohmyzsh/ohmyzsh.git"
+    refreshPeriod = "168h"
+    [".oh-my-zsh".pull]
+        args = ["--ff-only"]
+
+# Oh My Zsh custom plugins
+[".oh-my-zsh/custom/plugins/ai-cmd"]
+    type = "git-repo"
+    url = "https://github.com/shanemcd/ai-cmd.git"
+    refreshPeriod = "168h"
+    [".oh-my-zsh/custom/plugins/ai-cmd".pull]
+        args = ["--ff-only"]
+
+[".oh-my-zsh/custom/plugins/auto-tinty"]
+    type = "git-repo"
+    url = "https://github.com/shanemcd/zsh-auto-tinty.git"
+    refreshPeriod = "168h"
+    [".oh-my-zsh/custom/plugins/auto-tinty".pull]
+        args = ["--ff-only"]

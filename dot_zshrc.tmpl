@@ -70,13 +70,19 @@ ZSH_THEME="robbyrussell"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-{{- if eq .chezmoi.os "darwin" }}
-# Auto-sync terminal theme with system light/dark mode (macOS only)
+# Auto-sync terminal theme with system light/dark mode
 export ZSH_TINTY_LIGHT="base16-ia-light"
 export ZSH_TINTY_DARK="base16-ia-dark"
-{{- end }}
 
-plugins=(git{{ if eq .chezmoi.os "darwin" }} auto-tinty{{ end }})
+# ai-cmd plugin configuration (must be before oh-my-zsh loads)
+{{- if eq .chezmoi.os "darwin" }}
+export AI_CMD_OLLAMA_CMD="ollama"
+{{- else }}
+export AI_CMD_OLLAMA_CMD="podman exec systemd-ollama ollama"
+{{- end }}
+export AI_CMD_MODEL="gemma3:4b"
+
+plugins=(git auto-tinty ai-cmd)
 
 source $ZSH/oh-my-zsh.sh
 
