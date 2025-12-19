@@ -80,7 +80,7 @@ export AI_CMD_OLLAMA_CMD="ollama"
 {{- else }}
 export AI_CMD_OLLAMA_CMD="podman exec systemd-ollama ollama"
 {{- end }}
-export AI_CMD_MODEL="gemma3:4b"
+export AI_CMD_OLLAMA_MODEL="rnj-1:8b"
 
 plugins=(git auto-tinty ai-cmd)
 
