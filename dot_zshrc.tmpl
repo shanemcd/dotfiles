@@ -175,3 +175,14 @@ fi
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 {{- end }}
+
+# virtualenvwrapper
+export WORKON_HOME=$HOME/.virtualenvs
+export PROJECT_HOME=$HOME/projects
+{{- if eq .chezmoi.os "darwin" }}
+export VIRTUALENVWRAPPER_PYTHON=$(brew --prefix)/bin/python3
+source $(brew --prefix)/bin/virtualenvwrapper.sh
+{{- else }}
+export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
+source /usr/bin/virtualenvwrapper.sh
+{{- end }}
