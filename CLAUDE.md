@@ -171,10 +171,23 @@ git commit -m "Update secrets"
 git push
 
 # On other machines: pull and apply
-chezmoi update --init  # Pulls both repos and re-generates config with decrypted secrets
+chezmoi update --init  # Pulls dotfiles, auto-updates submodule, re-generates config
 ```
 
-**Note:** A chezmoi `read-source-state.pre` hook automatically runs `git submodule update --remote` before every chezmoi command. This ensures secrets are always up-to-date without manually updating the submodule pointer. The hook is defined in `.chezmoi.toml.tmpl` and the script lives in `.hooks/update-submodule.sh`.
+### Automatic Submodule Updates
+
+This repository uses chezmoi hooks to automatically keep the `external_secrets` submodule up-to-date:
+
+**How it works:**
+1. A `read-source-state.pre` hook runs before every chezmoi command
+2. The hook executes `.hooks/update-submodule.sh` which runs `git submodule update --remote`
+3. This fetches the latest commits from the secrets repo without needing to update the parent repo's submodule pointer
+
+**Configuration details** (in `.chezmoi.toml.tmpl`):
+- `[hooks.read-source-state.pre]` - defines the hook that runs the update script
+- `[update]` - customizes `chezmoi update` to use `git pull` without `--rebase` (avoids conflicts with submodule changes)
+
+**Result:** When you push new secrets to the secrets repo, other machines will automatically get them on the next `chezmoi update --init` - no need to update the submodule pointer in the parent repo.
 
 ### Debugging and Verification
 
