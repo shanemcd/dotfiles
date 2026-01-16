@@ -170,15 +170,11 @@ git add chezmoi-secrets.toml.age
 git commit -m "Update secrets"
 git push
 
-# Update main repo to track new submodule commit
-cd ~/.local/share/chezmoi
-git add external_secrets
-git commit -m "Update secrets submodule"
-git push
-
 # On other machines: pull and apply
 chezmoi update --init  # Pulls both repos and re-generates config with decrypted secrets
 ```
+
+**Note:** A chezmoi `read-source-state.pre` hook automatically runs `git submodule update --remote` before every chezmoi command. This ensures secrets are always up-to-date without manually updating the submodule pointer. The hook is defined in `.chezmoi.toml.tmpl` and the script lives in `.hooks/update-submodule.sh`.
 
 ### Debugging and Verification
 

@@ -41,9 +41,18 @@ encryption = "age"
     autoCommit = false
     autoPush = false
 
+[update]
+    command = "git"
+    args = ["pull", "--autostash", "--recurse-submodules"]
+
 [age]
     identity = "~/.config/chezmoi/key.txt"
     recipient = "age1wuc38w6748e7l0za4v5paccs9muasjuuqrdqq8npqyxl0dfseclsfh386e"
 
 [diff]
     exclude = ["scripts"]
+
+# Auto-update external_secrets submodule to latest remote (only on init/update)
+[hooks.read-source-state.pre]
+    command = "bash"
+    args = ["{{ .chezmoi.sourceDir }}/.hooks/update-submodule.sh"]
