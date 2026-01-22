@@ -75,12 +75,7 @@ export ZSH_TINTY_LIGHT="base16-ia-light"
 export ZSH_TINTY_DARK="base16-ia-dark"
 
 # ai-cmd plugin configuration (must be before oh-my-zsh loads)
-{{- if eq .chezmoi.os "darwin" }}
-export AI_CMD_OLLAMA_CMD="ollama"
-{{- else }}
-export AI_CMD_OLLAMA_CMD="podman exec systemd-ollama ollama"
-{{- end }}
-export AI_CMD_OLLAMA_MODEL="rnj-1:8b"
+export AI_CMD_BACKEND="claude"
 
 plugins=(git auto-tinty ai-cmd)
 
