@@ -1,0 +1,3 @@
+{{- if and (eq .chezmoi.os "linux") (eq .chezmoi.hostname "tot") -}}
+KWIN_DRM_DEVICES=/dev/dri/card0:/dev/dri/card1
+{{- end -}}
