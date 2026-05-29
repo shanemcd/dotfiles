@@ -9,50 +9,19 @@ Use the Docs API `batchUpdate` to make targeted edits that preserve comments and
 
 ## Step 1: Read the Document Structure
 
-Get the document's content with paragraph indices and styles:
+Fetch the doc and use the bundled helper script to inspect its structure:
 
 ```bash
 gws docs documents get --params '{"documentId": "DOC_ID"}' > /tmp/doc.json
-```
 
-Parse with Python to see the structure (save to file first — piping directly fails because the JSON contains lowercase `true`/`false`):
+# Show all paragraphs with indices and styles
+python3 ${CLAUDE_SKILL_DIR}/scripts/doc-structure.py /tmp/doc.json
 
-```python
-import json
+# Show only table cell contents
+python3 ${CLAUDE_SKILL_DIR}/scripts/doc-structure.py /tmp/doc.json --tables
 
-with open('/tmp/doc.json') as f:
-    doc = json.load(f)
-
-body = doc.get('body', {}).get('content', [])
-for elem in body:
-    if 'paragraph' in elem:
-        p = elem['paragraph']
-        text = ''.join([e.get('textRun', {}).get('content', '') for e in p.get('elements', [])])
-        style = p.get('paragraphStyle', {}).get('namedStyleType', '')
-        start = elem.get('startIndex', '')
-        end = elem.get('endIndex', '')
-        if text.strip():
-            print(f'[{start}-{end}] ({style}) {text.strip()[:120]}')
-```
-
-For **table cells**, use recursive traversal:
-
-```python
-def show_tables(elements):
-    for elem in elements:
-        if 'table' in elem:
-            for ri, row in enumerate(elem['table'].get('tableRows', [])):
-                for ci, cell in enumerate(row.get('tableCells', [])):
-                    for p in cell.get('content', []):
-                        if 'paragraph' in p:
-                            for e in p['paragraph'].get('elements', []):
-                                content = e.get('textRun', {}).get('content', '')
-                                start = e.get('startIndex', '')
-                                end = e.get('endIndex', '')
-                                if content.strip():
-                                    print(f'  R{ri}C{ci} [{start}-{end}] {repr(content.rstrip())}')
-
-show_tables(doc.get('body', {}).get('content', []))
+# Find specific text and get its exact index range
+python3 ${CLAUDE_SKILL_DIR}/scripts/doc-structure.py /tmp/doc.json --find "some text"
 ```
 
 ## Step 2: Choose the Right Operation
@@ -63,6 +32,7 @@ show_tables(doc.get('body', {}).get('content', []))
 | Insert new content at a position | `insertText` | When doing multiple inserts, work from **highest index to lowest** so earlier inserts don't shift later indices. |
 | Delete specific text | `deleteContentRange` | **Cannot include the trailing newline** at the end of a segment. Use `endIndex - 1`. |
 | Change paragraph formatting | `updateParagraphStyle` | Must use **current** indices — if you just inserted text, re-read the doc or do styling in a separate call. |
+| Add a clickable hyperlink | `updateTextStyle` with `link` | Apply to existing text to make it a link. Use with `replaceAllText` to clean up display text first. |
 
 ## Operations Reference
 
@@ -130,6 +100,33 @@ gws docs documents batchUpdate \
   }'
 ```
 
+### updateTextStyle — Add Hyperlinks
+
+Make existing text a clickable link. First ensure the display text is what you want (use `replaceAllText` to clean it up if needed), then apply the link:
+
+```bash
+gws docs documents batchUpdate \
+  --params '{"documentId": "DOC_ID"}' \
+  --json '{
+    "requests": [{
+      "updateTextStyle": {
+        "range": {"startIndex": 100, "endIndex": 109},
+        "textStyle": {
+          "link": {"url": "https://example.com/issue/123"}
+        },
+        "fields": "link"
+      }
+    }]
+  }'
+```
+
+**Common pattern — linked ticket references:**
+1. Use `replaceAllText` to get the display text right (e.g., strip raw URLs, keep just `AAP-12345`)
+2. Re-read the doc to get current indices of the ticket IDs
+3. Apply `updateTextStyle` with the link URL to each occurrence
+
+Note: `replaceAllText` only produces plain text — it cannot create hyperlinks. You must use `updateTextStyle` as a separate step.
+
 ### Batching Multiple Operations
 
 Multiple operations can go in one request. Process **deletes before inserts** and work **bottom-up** (highest indices first) to avoid index shifting:
@@ -154,7 +151,11 @@ gws docs documents batchUpdate \
 
 - **insertText boundary.** The insertion index must be inside an existing paragraph. If you get `"The insertion index must be inside the bounds of an existing paragraph"`, the index is past the segment boundary — back up by 1.
 
-- **Comments survive targeted edits.** `insertText`, `deleteContentRange`, `replaceAllText`, and `updateParagraphStyle` all preserve comments anchored to other text in the document. Only a full document re-upload via the Drive API destroys them.
+- **Inserted text inherits style.** Text inserted via `insertText` inherits the paragraph style at the insertion point. If you insert after a heading, the new text becomes a heading too. Apply `updateParagraphStyle` in a follow-up call to fix it.
+
+- **Shell escaping with parentheses.** Zsh interprets parentheses in `--json` values. If your JSON contains `(AAP-12345)` or similar, write the JSON to a temp file and use `--json "$(cat /tmp/payload.json)"` instead of inline.
+
+- **Comments survive targeted edits.** `insertText`, `deleteContentRange`, `replaceAllText`, `updateTextStyle`, and `updateParagraphStyle` all preserve comments anchored to other text in the document. Only a full document re-upload via the Drive API destroys them.
 
 - **Viewing comments.** Use `gcmd info --show-comments DOC_ID` or `gws drive comments list` to see existing comments and what text they're anchored to.
 
