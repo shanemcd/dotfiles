@@ -164,8 +164,7 @@ export CLOUD_ML_REGION=us-east5
 export ANTHROPIC_VERTEX_PROJECT_ID={{ .secrets.anthropic_vertex_project_id }}
 export GOOGLE_CLOUD_PROJECT={{ .secrets.google_cloud_project }}
 export GEMINI_API_KEY={{ .secrets.gemini_api_key }}
-export ANTHROPIC_MODEL='claude-opus-4-6[1m]'
-#export ANTHROPIC_MODEL="claude-sonnet-4@20250514"
+export ANTHROPIC_MODEL='opusplan'
 export ANTHROPIC_DEFAULT_HAIKU_MODEL='claude-haiku-4-5@20251001'
 
 {{- if eq .chezmoi.os "darwin" }}
