@@ -187,17 +187,17 @@ uvx --from "git+https://github.com/shanemcd/slacker" slacker --output json activ
 
 ```bash
 # Search your own messages (notes to self)
-uvx --from "git+https://github.com/shanemcd/slacker" slacker api search.messages --data '{"query": "from:@shanemcd to:@shanemcd", "count": 20, "sort": "timestamp", "sort_dir": "desc"}'
+uvx --from "git+https://github.com/shanemcd/slacker" slacker api search.messages --params '{"query": "from:@shanemcd to:@shanemcd", "count": "20", "sort": "timestamp", "sort_dir": "desc"}'
 
 # Search in specific channel
-uvx --from "git+https://github.com/shanemcd/slacker" slacker api search.messages --data '{"query": "in:#engineering important"}'
+uvx --from "git+https://github.com/shanemcd/slacker" slacker api search.messages --params '{"query": "in:#engineering important"}'
 ```
 
 ### Make Generic API Calls
 
 **IMPORTANT:** Use `--params` for GET requests and `--data` for POST requests:
-- `--params` sends query parameters (for GET endpoints like `conversations.replies`, `conversations.history`, `users.info`)
-- `--data` sends JSON body (for POST endpoints like `chat.postMessage`, `search.messages`)
+- `--params` sends query parameters (for GET endpoints like `search.messages`, `conversations.replies`, `conversations.history`, `users.info`)
+- `--data` sends JSON body (for POST endpoints like `chat.postMessage`, `saved.list`)
 
 ```bash
 # GET request with parameters (conversations.replies, conversations.history, users.info, etc.)
@@ -205,7 +205,10 @@ uvx --from "git+https://github.com/shanemcd/slacker" slacker api users.list --pa
 uvx --from "git+https://github.com/shanemcd/slacker" slacker api conversations.replies --params '{"channel":"C05S34J4EE9","ts":"1765902174.251099","limit":"100"}'
 uvx --from "git+https://github.com/shanemcd/slacker" slacker api conversations.history --params '{"channel":"C12345678","limit":"20"}'
 
-# POST request with data (chat.postMessage, search.messages, etc.)
+# Search messages (GET endpoint - uses --params)
+uvx --from "git+https://github.com/shanemcd/slacker" slacker api search.messages --params '{"query": "in:#general important", "count": "10"}'
+
+# POST request with data (chat.postMessage, etc.)
 uvx --from "git+https://github.com/shanemcd/slacker" slacker api chat.postMessage --data '{"channel":"general","text":"Hello!"}'
 
 # Post to your notes channel
@@ -295,8 +298,8 @@ uvx --from "git+https://github.com/shanemcd/slacker" slacker reminder "me to upd
 ### Review Past Notes
 
 ```bash
-# Search your notes from last week (POST endpoint - uses --data)
-uvx --from "git+https://github.com/shanemcd/slacker" slacker api search.messages --data '{"query":"from:@shanemcd to:@shanemcd after:7d"}'
+# Search your notes from last week (GET endpoint - uses --params)
+uvx --from "git+https://github.com/shanemcd/slacker" slacker api search.messages --params '{"query":"from:@shanemcd to:@shanemcd after:7d"}'
 
 # Get recent messages from notes channel (GET endpoint - uses --params)
 uvx --from "git+https://github.com/shanemcd/slacker" slacker api conversations.history --params '{"channel":"D19Q000SE","limit":"20"}'
