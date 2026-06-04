@@ -10,8 +10,7 @@ keybindings = [
     0xA5, 0x5C, # Right Alt -> Right Windows
 ]
 
-# Use KMS capture instead of XDG portal (requires cap_sys_admin on sunshine binary)
-capture = kms
+capture = kwin
 {{- if eq .chezmoi.os "linux" }}
 {{- $nvidiaCard := "" }}
 {{- range $i := list "0" "1" "2" "3" }}
