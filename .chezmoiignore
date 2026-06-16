@@ -16,3 +16,8 @@ CLAUDE.md
 .config/gcloud/.metricsUUID
 .config/gcloud/config_sentinel
 .config/gcloud/default_configs.db
+
+# Linux-only systemd overrides
+{{ if ne .chezmoi.os "linux" }}
+.config/systemd/user/plasma-powerdevil.service.d/restart.conf
+{{ end }}

@@ -1,0 +1,5 @@
+{{- if eq .chezmoi.os "linux" -}}
+[Service]
+Restart=always
+RestartSec=1
+{{- end -}}
