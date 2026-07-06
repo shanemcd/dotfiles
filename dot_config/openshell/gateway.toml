@@ -1,0 +1,23 @@
+[openshell]
+version = 1
+
+[openshell.gateway]
+bind_address = "0.0.0.0:8080"
+
+[openshell.gateway.tls]
+cert_path = "/etc/openshell-tls/server/tls.crt"
+key_path = "/etc/openshell-tls/server/tls.key"
+client_ca_path = "/etc/openshell-tls/ca.crt"
+
+[openshell.gateway.gateway_jwt]
+signing_key_path = "/etc/openshell-jwt/signing.pem"
+public_key_path = "/etc/openshell-jwt/public.pem"
+kid_path = "/etc/openshell-jwt/kid"
+gateway_id = "openshell"
+ttl_secs = 3600
+
+[openshell.drivers.podman]
+grpc_endpoint = "https://openshell-gateway:8080"
+guest_tls_ca = "/home/shanemcd/.local/state/openshell/tls/ca.crt"
+guest_tls_cert = "/home/shanemcd/.local/state/openshell/tls/client/tls.crt"
+guest_tls_key = "/home/shanemcd/.local/state/openshell/tls/client/tls.key"
