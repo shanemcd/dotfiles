@@ -236,11 +236,14 @@ The following secrets are required in `~/.config/chezmoi/chezmoi.toml`:
 
 ```toml
 [data.secrets]
-    anthropic_vertex_project_id = "your-project-id"
-    google_cloud_project = "your-project-id"
+    anthropic_vertex_project_id = "your-project-id"  # Claude Vertex
+    google_cloud_project = "your-project-id"         # Gemini / gcloud
+    google_cloud_location = "global"
+    gemini_model = "gemini-3.6-flash"
 ```
 
-These are referenced in `dot_zshrc.tmpl` and exported as environment variables for Claude Code and Google Cloud SDK integration.
+These are referenced in `dot_zshrc.tmpl` (and `dot_gemini/dot_env.tmpl`) and
+exported as environment variables for Claude Code, Gemini CLI, and Google Cloud.
 
 ## Common Modifications
 

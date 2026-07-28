@@ -71,7 +71,7 @@ ZSH_THEME="robbyrussell"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 # Auto-sync terminal theme with system light/dark mode
-export ZSH_TINTY_LIGHT="base16-ia-light"
+export ZSH_TINTY_LIGHT="base24-one-light"
 export ZSH_TINTY_DARK="base16-ia-dark"
 
 # ai-cmd plugin configuration (must be before oh-my-zsh loads)
@@ -161,13 +161,20 @@ if [ -f '$HOME/google-cloud-sdk/completion.zsh.inc' ]; then . '$HOME/google-clou
 if [ -f '/var/home/shanemcd/google-cloud-sdk/completion.zsh.inc' ]; then . '/var/home/shanemcd/google-cloud-sdk/completion.zsh.inc'; fi
 {{- end }}
 
+# Claude Code on Vertex (Anthropic reads ANTHROPIC_VERTEX_PROJECT_ID).
 export CLAUDE_CODE_USE_VERTEX=1
 export CLOUD_ML_REGION=us-east5
 export ANTHROPIC_VERTEX_PROJECT_ID={{ .secrets.anthropic_vertex_project_id }}
-export GOOGLE_CLOUD_PROJECT={{ .secrets.google_cloud_project }}
-export GEMINI_API_KEY={{ .secrets.gemini_api_key }}
 export ANTHROPIC_MODEL='claude-opus-4-6[1m]'
 export ANTHROPIC_DEFAULT_HAIKU_MODEL='claude-haiku-4-5@20251001'
+
+# Gemini CLI / Vertex (GOOGLE_CLOUD_* — separate from Claude's project).
+export GOOGLE_CLOUD_PROJECT={{ .secrets.google_cloud_project }}
+export GOOGLE_CLOUD_LOCATION={{ .secrets.google_cloud_location }}
+export GOOGLE_GENAI_USE_VERTEXAI=true
+export GEMINI_MODEL={{ .secrets.gemini_model }}
+# Project/location also live in ~/.gemini/.env and antigravity-cli/settings.json.
+# Leave CLOUD_ML_REGION=us-east5 for Claude; Gemini CLI uses GOOGLE_CLOUD_LOCATION.
 
 {{- if eq .chezmoi.os "darwin" }}
 # Only run if the shell is running in iTerm2.
