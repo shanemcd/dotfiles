@@ -176,6 +176,14 @@ export GEMINI_MODEL={{ .secrets.gemini_model }}
 # Project/location also live in ~/.gemini/.env and antigravity-cli/settings.json.
 # Leave CLOUD_ML_REGION=us-east5 for Claude; Gemini CLI uses GOOGLE_CLOUD_LOCATION.
 
+# OpenCode autoloads google-vertex-anthropic from GOOGLE_CLOUD_PROJECT; keep Gemini's
+# project as the shell default and remap only for the opencode binary.
+opencode() {
+  GOOGLE_CLOUD_PROJECT="${ANTHROPIC_VERTEX_PROJECT_ID}" \
+    VERTEX_LOCATION="${VERTEX_LOCATION:-global}" \
+    command opencode "$@"
+}
+
 {{- if eq .chezmoi.os "darwin" }}
 # Only run if the shell is running in iTerm2.
 if [ "$TERM_PROGRAM" = "iTerm.app" ]; then
