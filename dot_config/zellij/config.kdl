@@ -338,21 +338,263 @@ web_client {
 // 
 // osc8_hyperlinks true
  
+// Purpose-built light/dark UI themes. Avoids Zellij "ansi", which assumes
+// classic VGA 0=black/7=white and clashes with Base16/24 palettes.
+themes {
+    tinted-light {
+        text_unselected {
+            base 56 58 66
+            background 231 231 233
+            // Modifiers like "Alt +" sit on the light bar — needs dark/saturated accents.
+            emphasis_0 202 18 67
+            emphasis_1 1 132 188
+            emphasis_2 80 161 79
+            emphasis_3 166 38 164
+        }
+        text_selected {
+            base 9 10 11
+            background 202 202 206
+            emphasis_0 202 18 67
+            emphasis_1 1 132 188
+            emphasis_2 80 161 79
+            emphasis_3 166 38 164
+        }
+        ribbon_unselected {
+            // Soft elevated chips: dark text on cool grey.
+            base 56 58 66
+            background 202 202 206
+            emphasis_0 202 18 67
+            emphasis_1 9 10 11
+            emphasis_2 64 120 242
+            emphasis_3 166 38 164
+        }
+        ribbon_selected {
+            base 250 250 250
+            background 64 120 242
+            emphasis_0 254 187 42
+            emphasis_1 250 250 250
+            emphasis_2 254 187 42
+            emphasis_3 250 250 250
+        }
+        table_title {
+            base 80 161 79
+            background 231 231 233
+            emphasis_0 193 132 1
+            emphasis_1 1 132 188
+            emphasis_2 80 161 79
+            emphasis_3 166 38 164
+        }
+        table_cell_unselected {
+            base 56 58 66
+            background 231 231 233
+            emphasis_0 193 132 1
+            emphasis_1 1 132 188
+            emphasis_2 80 161 79
+            emphasis_3 166 38 164
+        }
+        table_cell_selected {
+            base 9 10 11
+            background 202 202 206
+            emphasis_0 193 132 1
+            emphasis_1 1 132 188
+            emphasis_2 80 161 79
+            emphasis_3 166 38 164
+        }
+        list_unselected {
+            base 56 58 66
+            background 231 231 233
+            emphasis_0 193 132 1
+            emphasis_1 1 132 188
+            emphasis_2 80 161 79
+            emphasis_3 166 38 164
+        }
+        list_selected {
+            base 9 10 11
+            background 202 202 206
+            emphasis_0 193 132 1
+            emphasis_1 1 132 188
+            emphasis_2 80 161 79
+            emphasis_3 166 38 164
+        }
+        frame_selected {
+            base 80 161 79
+            background 231 231 233
+            emphasis_0 193 132 1
+            emphasis_1 1 132 188
+            emphasis_2 166 38 164
+            emphasis_3 56 58 66
+        }
+        frame_highlight {
+            base 193 132 1
+            background 231 231 233
+            emphasis_0 166 38 164
+            emphasis_1 193 132 1
+            emphasis_2 193 132 1
+            emphasis_3 193 132 1
+        }
+        exit_code_success {
+            base 80 161 79
+            background 231 231 233
+            emphasis_0 1 132 188
+            emphasis_1 56 58 66
+            emphasis_2 166 38 164
+            emphasis_3 64 120 242
+        }
+        exit_code_error {
+            base 202 18 67
+            background 231 231 233
+            emphasis_0 254 187 42
+            emphasis_1 56 58 66
+            emphasis_2 56 58 66
+            emphasis_3 56 58 66
+        }
+        multiplayer_user_colors {
+            player_1 166 38 164
+            player_2 64 120 242
+            player_3 80 161 79
+            player_4 193 132 1
+            player_5 1 132 188
+            player_6 202 18 67
+            player_7 236 34 88
+            player_8 105 108 119
+            player_9 208 47 205
+            player_10 152 104 1
+        }
+    }
+    tinted-dark {
+        // Accents from ia-dark: coral, muted green, soft steel — no bright blue.
+        text_unselected {
+            base 204 204 204
+            background 26 26 26
+            emphasis_0 216 133 104
+            emphasis_1 124 156 174
+            emphasis_2 131 164 113
+            emphasis_3 185 142 178
+        }
+        text_selected {
+            base 248 248 248
+            background 34 34 34
+            emphasis_0 216 133 104
+            emphasis_1 124 156 174
+            emphasis_2 131 164 113
+            emphasis_3 185 142 178
+        }
+        ribbon_unselected {
+            // Soft elevated chips; coral keys match the terminal reds/oranges.
+            base 232 232 232
+            background 42 42 42
+            emphasis_0 216 133 104
+            emphasis_1 248 248 248
+            emphasis_2 131 164 113
+            emphasis_3 185 142 178
+        }
+        ribbon_selected {
+            base 26 26 26
+            background 131 164 113
+            emphasis_0 26 26 26
+            emphasis_1 26 26 26
+            emphasis_2 29 65 77
+            emphasis_3 26 26 26
+        }
+        table_title {
+            base 131 164 113
+            background 26 26 26
+            emphasis_0 216 133 104
+            emphasis_1 124 156 174
+            emphasis_2 131 164 113
+            emphasis_3 185 142 178
+        }
+        table_cell_unselected {
+            base 204 204 204
+            background 26 26 26
+            emphasis_0 216 133 104
+            emphasis_1 124 156 174
+            emphasis_2 131 164 113
+            emphasis_3 185 142 178
+        }
+        table_cell_selected {
+            base 248 248 248
+            background 34 34 34
+            emphasis_0 216 133 104
+            emphasis_1 124 156 174
+            emphasis_2 131 164 113
+            emphasis_3 185 142 178
+        }
+        list_unselected {
+            base 204 204 204
+            background 26 26 26
+            emphasis_0 216 133 104
+            emphasis_1 124 156 174
+            emphasis_2 131 164 113
+            emphasis_3 185 142 178
+        }
+        list_selected {
+            base 248 248 248
+            background 34 34 34
+            emphasis_0 216 133 104
+            emphasis_1 124 156 174
+            emphasis_2 131 164 113
+            emphasis_3 185 142 178
+        }
+        frame_selected {
+            base 131 164 113
+            background 26 26 26
+            emphasis_0 216 133 104
+            emphasis_1 124 156 174
+            emphasis_2 185 142 178
+            emphasis_3 118 118 118
+        }
+        frame_highlight {
+            base 216 133 104
+            background 26 26 26
+            emphasis_0 185 142 178
+            emphasis_1 216 133 104
+            emphasis_2 216 133 104
+            emphasis_3 216 133 104
+        }
+        exit_code_success {
+            base 131 164 113
+            background 26 26 26
+            emphasis_0 124 156 174
+            emphasis_1 204 204 204
+            emphasis_2 185 142 178
+            emphasis_3 185 147 83
+        }
+        exit_code_error {
+            base 216 104 104
+            background 26 26 26
+            emphasis_0 185 147 83
+            emphasis_1 204 204 204
+            emphasis_2 204 204 204
+            emphasis_3 204 204 204
+        }
+        multiplayer_user_colors {
+            player_1 185 142 178
+            player_2 124 156 174
+            player_3 131 164 113
+            player_4 185 147 83
+            player_5 216 133 104
+            player_6 216 104 104
+            player_7 139 108 55
+            player_8 118 118 118
+            player_9 185 142 178
+            player_10 184 184 184
+        }
+    }
+}
+
 // Choose the theme that is specified in the themes section.
 // Default: default
-// 
-// Use ANSI colors so Ghostty Base16 palette 16-21 overrides don't break the UI.
-theme "ansi"
+// Fallback when theme_dark/theme_light detection is unavailable.
+theme "tinted-dark"
  
-// Theme to use when the host terminal reports a dark color palette.
-// Requires `theme_light` to also be set; otherwise `theme` is used.
-// 
-// theme_dark "dracula"
+// Auto-switch from the host terminal's light/dark report (CSI 2031 / DSR 997).
+// Tinty also drives these via set-dark-theme / set-light-theme hooks.
+theme_dark "tinted-dark"
  
 // Theme to use when the host terminal reports a light color palette.
 // Requires `theme_dark` to also be set; otherwise `theme` is used.
-// 
-// theme_light "solarized-light"
+theme_light "tinted-light"
  
 // Choose the base input mode of zellij.
 // Default: normal

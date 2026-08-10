@@ -1,0 +1,59 @@
+# Keep Zellij's UI in sync when Tinty flips light/dark.
+# Zellij's theme_dark/theme_light only apply at session start; live CSI 2031
+# updates are not handled, so drive the switch from Tinty instead.
+hooks = [
+'''
+if command -v zellij >/dev/null 2>&1; then
+  case "$TINTY_SCHEME_VARIANT" in
+    light) action=set-light-theme ;;
+    dark) action=set-dark-theme ;;
+    *) action= ;;
+  esac
+  if [ -n "$action" ]; then
+    zellij list-sessions -n 2>/dev/null | while IFS= read -r line; do
+      case "$line" in
+        *EXITED*) continue ;;
+      esac
+      session=${line%% *}
+      [ -n "$session" ] || continue
+      zellij --session "$session" action "$action" 2>/dev/null || true
+    done
+  fi
+fi
+'''
+]
+
+{{- if eq .chezmoi.os "darwin" }}
+
+[[items]]
+path = "https://github.com/tinted-theming/tinted-terminal"
+name = "tinted-terminal-iterm2"
+themes-dir = "themes-16/iterm2-applescripts"
+hook = '''
+command cp -f %f ~/Library/Application\ Support/iTerm2/Scripts/AutoLaunch.scpt
+if pgrep -x iTerm2 >/dev/null 2>&1; then
+  osascript %f
+fi
+'''
+supported-systems = ["base16", "base24"]
+
+[[items]]
+path = "https://github.com/tinted-theming/tinted-terminal"
+name = "tinted-terminal-ghostty"
+themes-dir = "themes/ghostty"
+# With `theme` set to "tinted-theming", this will be where Ghostty looks for the theme file:
+hook = """
+mkdir -p ~/.config/ghostty/themes
+command cp -f "$TINTY_THEME_FILE_PATH" ~/.config/ghostty/themes/tinted-theming
+killall -SIGUSR2 ghostty 2>/dev/null || true
+"""
+supported-systems = ["base16", "base24"]
+{{- else if eq .chezmoi.os "linux" }}
+
+[[items]]
+path = "https://github.com/tinted-theming/tinted-terminal"
+name = "tinted-terminal"
+themes-dir = "themes/konsole"
+hook = "cp -f \"$TINTY_THEME_FILE_PATH\" ~/.local/share/konsole/$TINTY_SCHEME_ID.colorscheme && \"$TINTY_REPO_PATH/scripts/konsoleprofile.sh\" ColorScheme=$TINTY_SCHEME_ID"
+supported-systems = ["base16", "base24"]
+{{- end }}
