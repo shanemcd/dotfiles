@@ -41,7 +41,7 @@ slacker reminder "me to review PR in 30 minutes"
 
 ## Overview
 
-`slacker` extracts Slack authentication credentials from your browser session, enabling programmatic access to Slack APIs without creating a bot or app.
+`slacker` talks to Slack using either a **bot token** (`SLACK_BOT_TOKEN`, `xoxb-`) or a **browser user session** (`slacker login` → `~/.config/slacker/credentials`). Bot tokens work for documented Web API methods (`auth.test`, `chat.postMessage`, scoped `conversations.*`). Client-only commands (`dms`, `activity`, `reminders`, `reminder`) need the user session cookie.
 
 ## When to Use This Skill
 
@@ -55,7 +55,17 @@ Use this skill when:
 
 ## Authentication
 
-### First-Time Setup
+### Bot token
+
+If `SLACK_BOT_TOKEN` is set, slacker uses it and skips the credentials file (unless `--auth-file` is passed). No cookie is required.
+
+```bash
+export SLACK_BOT_TOKEN=xoxb-...
+uvx --from "git+https://github.com/shanemcd/slacker" slacker whoami
+uvx --from "git+https://github.com/shanemcd/slacker" slacker api auth.test
+```
+
+### Browser session
 
 ```bash
 # Extract credentials from your browser session
@@ -65,7 +75,7 @@ uvx --from "git+https://github.com/shanemcd/slacker" slacker login https://redha
 uvx --from "git+https://github.com/shanemcd/slacker" slacker whoami
 ```
 
-Credentials are stored at `~/.config/slacker/credentials` with `0600` permissions (read-only by owner).
+Credentials are stored at `~/.config/slacker/credentials` with `0600` permissions (read-only by owner). Pass `--auth-file` to force that file even when env tokens are set.
 
 ## Common Commands
 
