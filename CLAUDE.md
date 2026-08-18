@@ -240,10 +240,19 @@ The following secrets are required in `~/.config/chezmoi/chezmoi.toml`:
     google_cloud_project = "your-project-id"         # Gemini / gcloud
     google_cloud_location = "global"
     gemini_model = "gemini-3.6-flash"
+    google_chat_project_id = "your-project-id"
+    google_chat_topic = "hermes-chat-events"
+    google_chat_subscription = "hermes-chat-events-sub"
+    google_chat_allowed_users = "you@example.com"
+    google_chat_service_account = "hermes-chat-bot@your-project-id.iam.gserviceaccount.com"
+    slack_allowed_users = "U00000000"
+    jira_email = "you@example.com"
+    gitlab_host = "gitlab.example.com"
 ```
 
 These are referenced in `dot_zshrc.tmpl` (and `dot_gemini/dot_env.tmpl`) and
-exported as environment variables for Claude Code, Gemini CLI, and Google Cloud.
+exported as environment variables for Claude Code, Gemini CLI, Google Cloud, and
+Clankr Hermes (Chat / Slack allowlist / Jira email / GitLab host).
 
 ## Common Modifications
 

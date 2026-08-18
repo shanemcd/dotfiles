@@ -180,6 +180,16 @@ export GOOGLE_CLOUD_PROJECT={{ .secrets.google_cloud_project }}
 export GOOGLE_CLOUD_LOCATION={{ .secrets.google_cloud_location }}
 export GOOGLE_GENAI_USE_VERTEXAI=true
 export GEMINI_MODEL={{ .secrets.gemini_model }}
+
+# Clankr / Hermes OpenShell (infra ids live in chezmoi secrets, not the public repo).
+export GOOGLE_CHAT_PROJECT_ID={{ .secrets.google_chat_project_id }}
+export GOOGLE_CHAT_TOPIC_NAME=projects/${GOOGLE_CHAT_PROJECT_ID}/topics/{{ .secrets.google_chat_topic }}
+export GOOGLE_CHAT_SUBSCRIPTION_NAME=projects/${GOOGLE_CHAT_PROJECT_ID}/subscriptions/{{ .secrets.google_chat_subscription }}
+export GOOGLE_CHAT_ALLOWED_USERS={{ .secrets.google_chat_allowed_users }}
+export GOOGLE_CHAT_SERVICE_ACCOUNT={{ .secrets.google_chat_service_account }}
+export SLACK_ALLOWED_USERS={{ .secrets.slack_allowed_users }}
+export JIRA_EMAIL={{ .secrets.jira_email }}
+export GITLAB_HOST={{ .secrets.gitlab_host }}
 # Project/location also live in ~/.gemini/.env and antigravity-cli/settings.json.
 # Leave CLOUD_ML_REGION=us-east5 for Claude; Gemini CLI uses GOOGLE_CLOUD_LOCATION.
 
