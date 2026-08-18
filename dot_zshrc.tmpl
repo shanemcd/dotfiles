@@ -81,6 +81,13 @@ plugins=(git auto-tinty ai-cmd)
 
 source $ZSH/oh-my-zsh.sh
 
+# Over SSH, use the forwarded Mac gpg-agent. Do not auto-start a local
+# agent; that replaces sshd's S.gpg-agent socket and pinentry falls back
+# to the TTY.
+if [[ -n $SSH_CONNECTION ]]; then
+  export PASSWORD_STORE_GPG_OPTS='--no-autostart'
+fi
+
 # User configuration
 
 # export MANPATH="/usr/local/man:$MANPATH"
