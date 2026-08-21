@@ -120,6 +120,11 @@ fi
 {{- if eq .chezmoi.os "darwin" }}
 export PATH=/opt/homebrew/bin/:$PATH
 export PATH=$HOME/go/bin:$PATH
+
+# Keep gpg-agent (and S.gpg-agent.extra) running so SSH GPG forwarding
+# to tot can pop Touch ID via pinentry-touchid.
+export GPG_TTY="${TTY:-}"
+gpgconf --launch gpg-agent >/dev/null 2>&1
 {{- end }}
 
 # Set up fzf key bindings and fuzzy completion
