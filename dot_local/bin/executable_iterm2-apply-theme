@@ -1,0 +1,51 @@
+#!/usr/bin/env python3
+"""Apply a generated tinted iTerm2 AppleScript to every session."""
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+if len(sys.argv) != 2:
+    print(f"usage: {sys.argv[0]} GENERATED_APPLESCRIPT", file=sys.stderr)
+    raise SystemExit(2)
+
+path = Path(sys.argv[1])
+script = path.read_text()
+
+# tinted-terminal's iTerm2 templates contain one session block:
+#   tell current session of current window
+#       ... color assignments ...
+#   end tell
+# end tell
+# Wrap that block in explicit window/tab/session loops.
+inner = """repeat with w in windows
+    repeat with t in tabs of w
+        repeat with sess in sessions of t
+            tell sess"""
+script, replaced = re.subn(
+    r"^    tell current session of current window\n",
+    "    " + inner.replace("\n", "\n    ") + "\n",
+    script,
+    count=1,
+    flags=re.MULTILINE,
+)
+if replaced != 1:
+    print("iterm2-apply-theme: unexpected tinted AppleScript format", file=sys.stderr)
+    raise SystemExit(1)
+
+script, replaced = re.subn(
+    r"^    end tell\nend tell\s*$",
+    "            end tell\n        end repeat\n    end repeat\nend repeat\nend tell\n",
+    script,
+    count=1,
+    flags=re.MULTILINE,
+)
+if replaced != 1:
+    print("iterm2-apply-theme: missing AppleScript closing block", file=sys.stderr)
+    raise SystemExit(1)
+
+path.write_text(script)
+destination = Path.home() / "Library/Application Support/iTerm2/Scripts/AutoLaunch.scpt"
+if path.resolve() != destination.resolve():
+    subprocess.run(["cp", "-f", str(path), str(destination)], check=True)
+subprocess.run(["osascript", str(destination)], check=True)
