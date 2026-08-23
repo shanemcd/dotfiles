@@ -134,7 +134,10 @@ source <(fzf --zsh)
 source /usr/share/fzf/shell/key-bindings.zsh
 {{- end }}
 
-export PATH=$HOME/.local/bin:$PATH
+# n defaults to /usr/local; PATH prefers ~/.local/bin, so `n lts` would
+# update a node the shell never uses. Keep install prefix and PATH aligned.
+export N_PREFIX="${N_PREFIX:-$HOME/.local}"
+export PATH="$N_PREFIX/bin:$PATH"
 
 {{- if eq .chezmoi.os "linux" }}
 export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
@@ -175,7 +178,7 @@ if [ -f '/var/home/shanemcd/google-cloud-sdk/completion.zsh.inc' ]; then . '/var
 
 # Claude Code on Vertex (Anthropic reads ANTHROPIC_VERTEX_PROJECT_ID).
 export CLAUDE_CODE_USE_VERTEX=1
-export CLOUD_ML_REGION=us-east5
+export CLOUD_ML_REGION={{ .secrets.google_cloud_location }}
 export ANTHROPIC_VERTEX_PROJECT_ID={{ .secrets.anthropic_vertex_project_id }}
 export ANTHROPIC_MODEL='claude-opus-4-6[1m]'
 export ANTHROPIC_DEFAULT_HAIKU_MODEL='claude-haiku-4-5@20251001'
@@ -196,7 +199,7 @@ export SLACK_ALLOWED_USERS={{ .secrets.slack_allowed_users }}
 export JIRA_EMAIL={{ .secrets.jira_email }}
 export GITLAB_HOST={{ .secrets.gitlab_host }}
 # Project/location also live in ~/.gemini/.env and antigravity-cli/settings.json.
-# Leave CLOUD_ML_REGION=us-east5 for Claude; Gemini CLI uses GOOGLE_CLOUD_LOCATION.
+# Claude (CLOUD_ML_REGION) and Gemini (GOOGLE_CLOUD_LOCATION) both use google_cloud_location.
 
 # OpenCode autoloads google-vertex-anthropic from GOOGLE_CLOUD_PROJECT; keep Gemini's
 # project as the shell default and remap only for the opencode binary.
