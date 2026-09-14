@@ -79,6 +79,12 @@ export AI_CMD_BACKEND="claude"
 
 plugins=(git auto-tinty ai-cmd)
 
+{{- if eq .chezmoi.os "linux" }}
+# Let compinit autoload these completion functions; sourcing them directly
+# runs _arguments outside a completion context.
+fpath=("$HOME/.kubectx/completion" $fpath)
+{{- end }}
+
 source $ZSH/oh-my-zsh.sh
 
 # Over SSH, use the forwarded Mac gpg-agent. Do not auto-start a local
