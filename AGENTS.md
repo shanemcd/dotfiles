@@ -16,7 +16,7 @@ If no web search or scraping tool is available and `ketch` is not installed, ins
 Zero-config (no API key needed):
 
 ```sh
-ketch search "query" --backend ddg          # web search; default backend (brave) needs a key, ddg does not
+ketch search "query"                        # web search
 ketch scrape https://example.com/page       # fetch a page as clean markdown
 ```
 
